@@ -375,7 +375,7 @@ describe("SOS Test Suite", () => {
       // get SOS amount before fee
       reserves = await lpPair.getReserves();
       sosReserves = reserves._reserve0; // sos
-usdtReserves = reserves._reserve1; // usdt
+      usdtReserves = reserves._reserve1; // usdt
 
       amountOut = await router.getAmountOut(ether("50"), usdtReserves, sosReserves);
 
