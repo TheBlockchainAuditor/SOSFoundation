@@ -1445,7 +1445,7 @@ contract SOS is Context, IERC20, Ownable, LGEWhitelisted {
             }
 			
         } else {
-    
+
             if (_isExcluded[sender] && !_isExcluded[recipient]) {
                 _transferFromExcluded(sender, recipient, amount, 0);
             } else if (!_isExcluded[sender] && _isExcluded[recipient]) {
@@ -1457,7 +1457,7 @@ contract SOS is Context, IERC20, Ownable, LGEWhitelisted {
             } else {
                 _transferStandard(sender, recipient, amount, 0);
             }
-        
+
         }
         
         
