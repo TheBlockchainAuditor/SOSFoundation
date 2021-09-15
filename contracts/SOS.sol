@@ -1007,9 +1007,9 @@ contract SOS is Context, IERC20, Ownable, LGEWhitelisted {
     
     using SafeMath for uint256;
     using Address for address;
-    
+
     using EnumerableSet for EnumerableSet.AddressSet;
-    
+
     event BuyFees(uint256 communityFee, uint256 jackpotFee);
     event SellFees(uint256 communityFee, uint256 jackpotFee, uint256 lpFee, uint256 reflectFee);
 
@@ -1019,7 +1019,7 @@ contract SOS is Context, IERC20, Ownable, LGEWhitelisted {
 
     mapping (address => bool) private _isExcluded;
     address[] private _excluded;
-   
+
     uint256 private constant MAX = ~uint256(0);
     uint256 private constant _tTotal = 1000000000e9;
     uint256 private _rTotal = (MAX - (MAX % _tTotal));
@@ -1030,72 +1030,72 @@ contract SOS is Context, IERC20, Ownable, LGEWhitelisted {
     uint8 private _decimals = 9;
 
     address public _router;
-    
+
     mapping(address => bool) public _pair;
-    
-	address public _communityAddress;
+
+    address public _communityAddress;
     uint256 public _communityBuyFeePct;
-	uint256 public _communitySellFeePct;
-	
+    uint256 public _communitySellFeePct;
+
     address public _jackpotAddress;
-	uint256 public _jackpotBuyFeePct;
+    uint256 public _jackpotBuyFeePct;
     uint256 public _jackpotSellFeePct;
 
     uint256 public _lpSellFeePct;
-	
-	uint256 public _reflectSellFeePct;
-	
-	EnumerableSet.AddressSet _holders;
-	uint256 public _holderMinBalance;
-	
+
+    uint256 public _reflectSellFeePct;
+
+    EnumerableSet.AddressSet _holders;
+    uint256 public _holderMinBalance;
+
     address public _quoteToken;
-	TokenPool public _quoteTokenPool;
-	
-	uint256 public _buyMaxAmount;
-	uint256 public _sellMaxAmount;
+    TokenPool public _quoteTokenPool;
+
+    uint256 public _buyMaxAmount;
+    uint256 public _sellMaxAmount;
 
     constructor (address router, address communityAddress, address jackpotAddress, address quoteToken) public {
         
         _router = router;
-        
+
         IUniswapV2Router02 r = IUniswapV2Router02(_router);
-        
+
         _communityAddress = communityAddress;
-		_communityBuyFeePct = 250;
-		_communitySellFeePct = 250;
-		
+        _communityBuyFeePct = 250;
+        _communitySellFeePct = 250;
+
         _jackpotAddress = jackpotAddress;
-        
+
         _jackpotBuyFeePct = 250;
         _jackpotSellFeePct = 200;
-		
+
         _lpSellFeePct = 50; 
-		
+
         _reflectSellFeePct = 500;
-        
+
         _buyMaxAmount = 10000000e9;
         _sellMaxAmount = 10000000e9;
-        
+
         _rOwned[_msgSender()] = _rTotal;
         emit Transfer(address(0), _msgSender(), _tTotal);
-        
+
         _holders.add(_msgSender());
-        
+
         excludeAccount(_msgSender());
         excludeAccount(address(this));
         excludeAccount(_communityAddress);
         excludeAccount(_jackpotAddress);
-        
+
         IUniswapV2Factory f = IUniswapV2Factory(r.factory());
-        
+
         _quoteToken = quoteToken;
-        
+
         address pair = f.createPair(address(this), _quoteToken);
-        
+
         setPair(pair, true);
-        
+
         _holderMinBalance = 1e9;
-        
+
         _quoteTokenPool = new TokenPool(IERC20(_quoteToken));
         
     }
@@ -1103,28 +1103,28 @@ contract SOS is Context, IERC20, Ownable, LGEWhitelisted {
     function setBuyMaxAmount(uint256 buyMaxAmount) external onlyOwner {
         _buyMaxAmount = buyMaxAmount;
     }
-    
+
     function setSellMaxAmount(uint256 sellMaxAmount) external onlyOwner {
         _sellMaxAmount = sellMaxAmount;
     }
-    
+
     function setHolderMinBalance(uint256 minBalance) external onlyOwner {
         _holderMinBalance = minBalance;
     }
-    
-    
+
+
     function setRouter(address r) external onlyOwner {
         _router = r;
     }
 
-	function setPair(address a, bool pair) public onlyOwner {
-	    
-	    if(!isExcluded(a) && pair)
-	        excludeAccount(a);
+    function setPair(address a, bool pair) public onlyOwner {
+        
+        if(!isExcluded(a) && pair)
+            excludeAccount(a);
 
-	    if(isExcluded(a) && !pair)
-	        includeAccount(a);
-	        
+        if(isExcluded(a) && !pair)
+            includeAccount(a);
+            
         _pair[a] = pair;
         
     }
@@ -1136,11 +1136,11 @@ contract SOS is Context, IERC20, Ownable, LGEWhitelisted {
         _communitySellFeePct = sellFeePct;
         
     }
-    
+
     function setJackpot(address a, uint256 buyFeePct, uint256 sellFeePct) external onlyOwner {
         
         _jackpotAddress = a;
-        
+
         _jackpotBuyFeePct = buyFeePct;
         _jackpotSellFeePct = sellFeePct;
         
@@ -1172,7 +1172,7 @@ contract SOS is Context, IERC20, Ownable, LGEWhitelisted {
         if (_isExcluded[account]) return _tOwned[account];
         return tokenFromReflection(_rOwned[account]);
     }
-    
+
     function holders() public view returns (uint256) {
         return _holders.length();
     }
@@ -1181,15 +1181,15 @@ contract SOS is Context, IERC20, Ownable, LGEWhitelisted {
         
         address[] memory addressList;
         uint256[] memory balanceList;
-        
+
         if(_holders.length() > 0 && startIndex < _holders.length()) {
             
             if(_holders.length().sub(startIndex) < count)
                 count = _holders.length().sub(startIndex);
-            
+
             addressList = new address[](count);
             balanceList = new uint256[](count);
-        
+
             for (uint256 i = 0; i < count; i++) {
                 
                 addressList[i] = _holders.at(startIndex.add(i));
@@ -1297,73 +1297,73 @@ contract SOS is Context, IERC20, Ownable, LGEWhitelisted {
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
         require(amount > 1e6, "Transfer amount must be greater than 0.001");
-        
+
         _applyLGEWhitelist(sender, recipient, amount);
-        
+
         if (!_pair[sender] && _pair[recipient]) {
             //selling
             
             if(!_isExcluded[sender]) {
                 
                 require(amount <= _sellMaxAmount, "Max sell amount");
-                
+
                 uint256 initialAmount = amount;
-                
+
                 uint256 communitySellFeeAmount = 0;
                 uint256 jackpotSellFeeAmount = 0;
                 uint256 lpSellFeeAmount = 0;
-            
+
                 if(_communitySellFeePct > 0) {
                     
                     communitySellFeeAmount = initialAmount.mul(_communitySellFeePct).div(10000);
                     amount = amount.sub(communitySellFeeAmount);
-	
-    			}
-    
+
+                }
+
                 if(_jackpotSellFeePct > 0) {
                     
                     jackpotSellFeeAmount = initialAmount.mul(_jackpotSellFeePct).div(10000);
-                    
+
                     _transferToExcluded(sender, _jackpotAddress, jackpotSellFeeAmount, 0);
                     amount = amount.sub(jackpotSellFeeAmount);
-    				
-    			}
+                    
+                }
 
                 if(_lpSellFeePct > 0) {
                     
                     lpSellFeeAmount = initialAmount.mul(_lpSellFeePct).div(10000);
                     amount = amount.sub(lpSellFeeAmount);
                     
-    			}
+                }
     			
-    			if((communitySellFeeAmount + lpSellFeeAmount) > 0) {
+                if((communitySellFeeAmount + lpSellFeeAmount) > 0) {
     			    
-    			    _transferToExcluded(sender, address(this), (communitySellFeeAmount + lpSellFeeAmount), 0);
-    			    
-    			    IUniswapV2Router02 r = IUniswapV2Router02(_router);
-    			    
-    			    address[] memory path = new address[](2);
-    			    
+                    _transferToExcluded(sender, address(this), (communitySellFeeAmount + lpSellFeeAmount), 0);
+
+                    IUniswapV2Router02 r = IUniswapV2Router02(_router);
+
+                    address[] memory path = new address[](2);
+
                     path[0] = address(this);
                     path[1] = _quoteToken;
-                    
+
                     uint256 lpTokenBaseAmount = 0;
                     uint256 lpTokenQuoteAmount = 0;
-    			    uint256 lpQuoteAmount = 0;
+                    uint256 lpQuoteAmount = 0;
     			    
-    			    if(lpSellFeeAmount > 0) {
-    			        
-    			        lpTokenBaseAmount = lpSellFeeAmount.div(2);
+                    if(lpSellFeeAmount > 0) {
+                        
+                        lpTokenBaseAmount = lpSellFeeAmount.div(2);
                         lpTokenQuoteAmount = lpSellFeeAmount.sub(lpTokenBaseAmount);
                         
-    			    }
+                    }
     			    
-    			    uint256 sellAmount = communitySellFeeAmount.add(lpTokenQuoteAmount);
-    			    
+                    uint256 sellAmount = communitySellFeeAmount.add(lpTokenQuoteAmount);
+
                     _approve(address(this), _router, sellAmount.add(lpTokenBaseAmount)); // 1 approve to cover adding liquidity
-                    
+
                     uint256 quoteBalance = _quoteTokenPool.balance();
-                    
+
                     r.swapExactTokensForTokensSupportingFeeOnTransferTokens(
                         sellAmount,
                         0,
@@ -1377,11 +1377,11 @@ contract SOS is Context, IERC20, Ownable, LGEWhitelisted {
                     if(lpTokenQuoteAmount > 0) {
                         
                         lpQuoteAmount = r.getAmountsOut(lpTokenQuoteAmount, path)[1];
-                    
+
                         _quoteTokenPool.transfer(address(this), lpQuoteAmount);
-                    
+
                         IERC20(_quoteToken).approve(_router, lpQuoteAmount);
-        
+
                         r.addLiquidity (
                             address(this),
                             _quoteToken,
@@ -1392,16 +1392,16 @@ contract SOS is Context, IERC20, Ownable, LGEWhitelisted {
                             owner(),
                             block.timestamp
                         );
-                    
+
                         _quoteTokenPool.transfer(_communityAddress, quoteAmount.sub(lpQuoteAmount));
                         
-    		    	}
+                    }
                         
     			}
     			
-    			_transferToExcluded(sender, recipient, amount, initialAmount.mul(_reflectSellFeePct).div(10000));
-    			
-    			emit SellFees(communitySellFeeAmount, jackpotSellFeeAmount, lpSellFeeAmount, initialAmount.mul(_reflectSellFeePct).div(10000));
+                _transferToExcluded(sender, recipient, amount, initialAmount.mul(_reflectSellFeePct).div(10000));
+
+                emit SellFees(communitySellFeeAmount, jackpotSellFeeAmount, lpSellFeeAmount, initialAmount.mul(_reflectSellFeePct).div(10000));
     		    
             } else {
                 _transferBothExcluded(sender, recipient, amount, 0);
@@ -1413,32 +1413,32 @@ contract SOS is Context, IERC20, Ownable, LGEWhitelisted {
             if(!_isExcluded[recipient]) {
                 
                 require(amount <= _buyMaxAmount, "Max buy amount");
-                
+
                 uint256 initialAmount = amount;
-                
+
                 uint256 communityBuyFeeAmount = 0;
                 uint256 jackpotBuyFeeAmount = 0;
-            
+
                 if(_communityBuyFeePct > 0) {
                     
                     communityBuyFeeAmount = initialAmount.mul(_communityBuyFeePct).div(10000);
                     amount = amount.sub(communityBuyFeeAmount);
-                    
+
                     _transferBothExcluded(sender, _communityAddress, communityBuyFeeAmount, 0);
 
-    			}
+                }
     
                 if(_jackpotBuyFeePct > 0) {
-                    
+
                     jackpotBuyFeeAmount = initialAmount.mul(_jackpotBuyFeePct).div(10000);
                     amount = amount.sub(jackpotBuyFeeAmount);
-                    
+
                     _transferBothExcluded(sender, _jackpotAddress, jackpotBuyFeeAmount, 0);
-    			}
+                }
     			
-    			_transferFromExcluded(sender, recipient, amount, 0);
-    			
-    			emit BuyFees(communityBuyFeeAmount, jackpotBuyFeeAmount);
+                _transferFromExcluded(sender, recipient, amount, 0);
+
+                emit BuyFees(communityBuyFeeAmount, jackpotBuyFeeAmount);
     			
             } else {
                 _transferBothExcluded(sender, recipient, amount, 0);
