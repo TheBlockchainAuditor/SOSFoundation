@@ -1,0 +1,13 @@
+node_modules
+
+#Hardhat files
+cache
+artifacts
+notebooks
+visualizations
+versions
+coverage*
+.ipynb_checkpoints
+test
+data
+scripts
