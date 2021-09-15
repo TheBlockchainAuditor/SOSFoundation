@@ -8,6 +8,5 @@ visualizations
 versions
 coverage*
 .ipynb_checkpoints
-test
 data
 scripts
